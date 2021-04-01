@@ -19,7 +19,7 @@ echo
 clear
 
 rm -Rf openwrt/common openwrt/files openwrt/devices
-svn co https://github.com/garypang13/Actions-OpenWrt/trunk/devices openwrt/devices
+svn co https://github.com/guyezi/Actions-OpenWrt/trunk/devices openwrt/devices
 cd openwrt
 
 git checkout .
@@ -64,8 +64,8 @@ fi
 
 echo
 
-read -p "请输入后台地址 [回车默认10.0.0.1]: " ip
-ip=${ip:-"10.0.0.1"}
+read -p "请输入后台地址 [回车默认192.168.10.1]: " ip
+ip=${ip:-"192.168.10.1"}
 echo "您的后台地址为: $ip"
 
 rm -Rf feeds package/feeds common files diy tmp
@@ -84,11 +84,11 @@ if [ -f "devices/$firmware/diy.sh" ]; then
 		/bin/bash "devices/$firmware/diy.sh"
 fi
 if [ -f "devices/common/default-settings" ]; then
-	sed -i 's/10.0.0.1/$ip/' devices/common/default-settings
+	sed -i 's/192.168.10.1/$ip/' devices/common/default-settings
 	cp -f devices/common/default-settings package/*/*/default-settings/root/etc/uci-defaults/99-default-settings
 fi
 if [ -f "devices/$firmware/default-settings" ]; then
-	sed -i 's/10.0.0.1/$ip/' devices/$firmware/default-settings
+	sed -i 's/192.168.10.1/$ip/' devices/$firmware/default-settings
 	cat devices/$firmware/default-settings >> package/*/*/default-settings/root/etc/uci-defaults/99-default-settings
 fi
 if [ -n "$(ls -A "devices/common/patches" 2>/dev/null)" ]; then
@@ -111,7 +111,7 @@ case ${YN:-N} in
 		make menuconfig
 	echo ""
 	;;
-	[Nn]) 
+	[Nn])
 	make defconfig
 		break
 	;;
@@ -153,6 +153,6 @@ echo "
 编译完成~~~
 
 初始后台地址: $ip
-初始用户名密码: root  root
+初始用户名密码: root  admin
 
 "

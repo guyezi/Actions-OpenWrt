@@ -3,7 +3,21 @@
 rm -Rf feeds/custom/diy
 rm -Rf feeds/packages/net/{smartdns,mwan3,miniupnpd,aria2,https-dns-proxy,shadowsocks-libev,frp,openvpn} feeds/luci/applications/luci-app-{dockerman,smartdns,frpc,frps,https-dns-proxy}
 rm -Rf feeds/packages/utils/cgroupfs-mount
+rm -Rf package/base-files/files/etc/banner
+wget -p package/base-files/files/etc/ https://raw.githubusercontent.com/guyezi/openwrt-packages/main/default-settings/root/banner
 ./scripts/feeds update luci packages custom
+sed -i 's/filebrowser/filebrowserpl/d' feeds/custom/luci-app-advanced/luasrc/controller/filebrowser.lua
+mv feeds/custom/luci-app-advanced/luasrc/controller/filebrowser.lua feeds/custom/luci-app-advanced/luasrc/controller/filebrowserpl.lua
+sed -i 's/openclash/bypass/d' feeds/custom/luci-app-advanced/luasrc/model/cbi/advanced.lua
+mv feeds/custom/luci-app-advanced/luasrc/view/filebrowser.htm feeds/custom/luci-app-advanced/luasrc/view/filebrowserpl.htm
+rm -Rf feeds/custom/luci-app-filebrowser
+git clone https://github.com/guyezi/luci-app-filebrowser.git feeds/custom/luci-app-filebrowser
+git clone https://github.com/gSpotx2f/luci-app-cpu-status.git feeds/custom/luci-app-cpu-status
+rm -Rf  feeds/custom/luci-app-cpu-status/Makefile
+wget -p feeds/custom/luci-app-cpu-status/ https://raw.githubusercontent.com/guyezi/openwrt-packages/19.07/luci-app-cpu-status/Makefile
+git clone https://github.com/gSpotx2f/luci-app-internet-detector.git feeds/custom/luci-app-internet-detector
+rm -Rf  feeds/custom/luci-app-internet-detector/
+wget -p feeds/custom/luci-app-internet-detector/ https://raw.githubusercontent.com/guyezi/openwrt-packages/19.07/luci-app-internet-detector/Makefile
 ./scripts/feeds install -a
 sed -i 's/Os/O2/g' include/target.mk
 rm -Rf tools/upx && svn co https://github.com/coolsnowwolf/lede/trunk/tools/upx tools/upx
@@ -20,6 +34,7 @@ sed -i '$a /etc/bench.log' package/base-files/files/lib/upgrade/keep.d/base-file
 sed -i '$a /etc/acme' package/base-files/files/lib/upgrade/keep.d/base-files-essential
 sed -i '/\/etc\/profile/d' package/base-files/files/lib/upgrade/keep.d/base-files-essential
 sed -i '/^\/etc\/profile/d' package/base-files/Makefile
+#
 # find target/linux/x86 -name "config*" -exec bash -c 'cat kernel.conf >> "{}"' \;
 find target/linux -path "target/linux/*/config-*" | xargs -i sed -i '$a CONFIG_ACPI=y\nCONFIG_X86_ACPI_CPUFREQ=y\n \
 CONFIG_NR_CPUS=128\nCONFIG_FAT_DEFAULT_IOCHARSET="utf8"\nCONFIG_CRYPTO_CHACHA20_NEON=y\nCONFIG_CRYPTO_CHACHA20POLY1305=y\nCONFIG_BINFMT_MISC=y' {}
@@ -37,15 +52,15 @@ sed -i 's?+pdnsd-alt??' package/feeds/custom/luci-app-turboacc/Makefile
 sed -i 's/PKG_BUILD_DIR:=/PKG_BUILD_DIR?=/g' feeds/luci/luci.mk
 sed -i '/killall -HUP/d' feeds/luci/luci.mk
 find package target -name inittab | xargs -i sed -i "s/askfirst/respawn/g" {}
-for ipk in $(find package/feeds/custom/* -maxdepth 0); do	
+for ipk in $(find package/feeds/custom/* -maxdepth 0); do
 	if [[ ! -d "$ipk/patches" && ! "$(grep "codeload.github.com" $ipk/Makefile)" ]]; then
 		find $ipk/ -maxdepth 1 ! -path *tcping* -name "Makefile" \
 		| xargs -i sed -i "s/PKG_SOURCE_VERSION:=[0-9a-z]\{15,\}/PKG_SOURCE_VERSION:=HEAD/g" {}
-	fi	
+	fi
 done
 sed -i 's/$(VERSION) &&/$(VERSION) ;/g' include/download.mk
 date=`date +%m.%d.%Y`
-sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by GaryPang'/g" package/base-files/files/etc/openwrt_release
+sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by GuYeZi'/g" package/base-files/files/etc/openwrt_release
 sed -i "s/# REVISION:=x/REVISION:= $date/g" include/version.mk
 sed -i '$a cgi-timeout = 300' package/feeds/packages/uwsgi/files-luci-support/luci-webui.ini
 

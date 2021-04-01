@@ -12,6 +12,6 @@ fi
 
 touch /etc/config/placeholder
 
-sed -i '$a src/gz openwrt_custom https://op.supes.top/packages/x64' /etc/opkg/distfeeds.conf
+sed -i '$a src/gz openwrt_custom https://wrt.guyezi.com/packages/x64' /etc/opkg/distfeeds.conf
 
 exit 0

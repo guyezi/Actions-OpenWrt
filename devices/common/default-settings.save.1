@@ -48,16 +48,19 @@ if [ ! -f /etc/config/placeholder ]; then
   uci set luci.main.mediaurlbase=/luci-static/edge
   uci commit luci
 
+  uci set firewall.@zone[1].input='ACCEPT'
+  uci set firewall.@zone[1].forward='ACCEPT'
+  uci set firewall.@zone[1].output='ACCEPT'
   uci set system.@system[0].timezone=CST-8
   uci set system.@system[0].zonename=Asia/Shanghai
   uci commit system
 
   uci set fstab.@global[0].anon_mount=1
   uci commit fstab
-  sed -i 's/root:.*/root:$1$XxDu6KOc$GxuZ/R0J2syD0eoxCW.by0:18336:0:99999:7:::/g' /etc/shadow
+  sed -i 's/root:.*/root:$1$XxDu6KOc$GxuZ/R0J2syD0eoxCW.by0:0:0:99999:7:::/g' /etc/shadow
   uci set network.lan.ipaddr="192.168.10.1"
   uci set network.lan.netmask='255.255.254.0'
-  uci set network.lan.broadcast='192.168.11.255'
+  uci set 
   uci commit network
 
   uci set network.@globals[0].packet_steering=1
@@ -74,11 +77,6 @@ if [ ! -f /etc/config/placeholder ]; then
   uci set dhcp.lan.dhcpv6='hybrid'
   uci commit dhcp
 
-  uci set firewall.@zone[1].output='ACCEPT'
-  uci set firewall.@zone[1].input='ACCEPT'
-  uci set firewall.@zone[1].forward='ACCEPT'
-  uci commit firewall
-
 fi
 
 [ -f /usr/bin/wget ] &&
@@ -88,8 +86,6 @@ cp -R /www/cgi-bin/* /www/
 find /www -type d -exec chmod 755 {} \;
 chmod +x /www/luci
 
-
 sed -i "s/git-.*-\(.*\)/git-\1/g" /usr/lib/lua/luci/version.lua
 
 ln -s /sbin/poweroff /sbin/shutdown
-
